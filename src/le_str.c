@@ -1,7 +1,8 @@
-#include "le_str.h"
 #include <malloc.h>
 #include <math.h>
 #include <string.h>
+
+#include "le_str.h"
 
 struct le_str *le_str_create() {
     struct le_str *s = (struct le_str *)malloc(sizeof(struct le_str));
