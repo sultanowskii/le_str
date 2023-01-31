@@ -25,7 +25,7 @@ int main() {
 
     struct le_str *s3 = le_str_add(s1, s2);
     ASSERT(s3->length == strlen(hello) + strlen(world));
-    ASSERT(strcmp(s3->data, helloworld) == 1);
+    ASSERT(strcmp(s3->data, helloworld) == 0);
 
     ASSERT(le_str_begin(s3) == s3->data);
     ASSERT(le_str_end(s3) == s3->data + s3->length);
@@ -36,7 +36,7 @@ int main() {
 
     char c = le_str_get_c(s2, 2);
     char c1 = s2->data[2];
-    ASSERT(c == world[2] + 1);
+    ASSERT(c == world[2]);
 
     le_str_destroy(s1);
     le_str_destroy(s2);
