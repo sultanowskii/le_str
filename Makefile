@@ -1,18 +1,35 @@
-CFLAGS = -Isrc
-CFLAGS_DEBUG = -Isrc -g -Wall -Wextra
+CFLAGS       = -fPIC
+CFLAGS_DEBUG = -g -Wall -Wextra -fPIC
+LDFLAGS      = -shared
+INCLUDES     = -Isrc -L.
 
-BUILD_FILES = $(wildcard src/*.c)
+SRCS         = $(wildcard src/*.c)
+0BJS         = $(SRCS:.c=.o) # simply relpacing .c with .o
 
-build: src/main.c $(BUILD_FILES)
-	$(CC) $(CFLAGS) $^ -o liblestr.so
+TARGET_BASIC = lestr
+TARGET       = lib$(TARGET_BASIC).so
 
-build-debug: src/main.c $(BUILD_FILES)
-	$(CC) $(CFLAGS_DEBUG) $^ -o liblestr.so
+all: $(TARGET)
 
-test: src/tests/test.c $(BUILD_FILES)
-	$(CC) $(CFLAGS_DEBUG) $^ -o test.elf
+clean:
+	rm -rf $(TARGET) **/*.o
+
+$(TARGET): $(0BJS)
+	$(CC) $(INCLUDES) $(CFLAGS) $(LDFLAGS) -o $(TARGET) $^
+
+test: src/tests/test.c $(0BJS)
+	$(CC) $(INCLUDES) $(CFLAGS_DEBUG) -o test.elf $^
 	./test.elf
 	rm test.elf
 
+test-shared: src/tests/test.c $(TARGET)
+	$(CC) $(INCLUDES) $(CFLAGS_DEBUG) -l$(TARGET_BASIC) -o test.elf $<
+	LD_LIBRARY_PATH=. ./test.elf
+	rm test.elf
+
+# using some automatic variables, which is pretty convenient
+%.o: %.c
+	$(CC) $(INCLUDES) $(CFLAGS) -c -o $@ $<
+
 install:
-	install -m 755 liblestr.so /usr/lib/
+	install -m 755 $(TARGET) /usr/local/lib/
