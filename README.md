@@ -11,7 +11,7 @@ Yet another C library providing some modernish str tricks. Deal with it.
 - [x] Getting a reversed string
 - [x] Integrity validation (the validity of `length` etc.)
 - [ ] Finding a substring
-- [ ] Getting index/rindex of symbol
+- [x] Getting index/rindex of symbol
 - [ ] Splitting (?)
 - [ ] Replacing
 

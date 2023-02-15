@@ -73,4 +73,10 @@ struct le_str *le_str_get_reversed(struct le_str const *s);
 // Validates fields integrity. If everythinh is ok, returns TRUE (1)
 BOOL le_str_is_valid(struct le_str const *s);
 
+// Get index of given char (`c`) in `s`. If not found, returns -1.
+size_t le_str_index(struct le_str const *s, char c);
+
+// Get rindex (index, starting from the end of string) of given char (`c`) in `s`. If not found, returns -1.
+size_t le_str_rindex(struct le_str const *s, char c);
+
 #endif

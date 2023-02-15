@@ -20,6 +20,11 @@ int main() {
     ASSERT(strcmp(s1->data, hello) == 0)
     ASSERT(le_str_is_valid(s1))
 
+    ASSERT(le_str_index(s1, 'l') == 2)
+    ASSERT(le_str_rindex(s1, 'l') == 3)
+    ASSERT(le_str_index(s1, 'Q') == (size_t)-1)
+    ASSERT(le_str_rindex(s1, 'Q') == (size_t)-1)
+
     struct le_str *s2 = le_str_create_with_cstr(world);
     ASSERT(s2->length == strlen(world))
     ASSERT(strcmp(s2->data, world) == 0)

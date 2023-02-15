@@ -169,3 +169,22 @@ BOOL le_str_is_valid(struct le_str const *s) {
 
     return TRUE;
 }
+
+size_t le_str_index(struct le_str const *s, char c) {
+    for (size_t i = 0; i < s->length; i++) {
+        if (__unsafe_le_str_get_c(s, i) == c) {
+            return i;
+        }
+    }
+    return (size_t)-1;
+}
+
+size_t le_str_rindex(struct le_str const *s, char c) {
+    for (size_t i = s->length; i > 0; i--) {
+        size_t index = i - 1;
+        if (__unsafe_le_str_get_c(s, index) == c) {
+            return index;
+        }
+    }
+    return (size_t)-1;
+}
