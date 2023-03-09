@@ -79,4 +79,10 @@ size_t le_str_index(struct le_str const *s, char c);
 // Get rindex (index, starting from the end of string) of given char (`c`) in `s`. If not found, returns -1.
 size_t le_str_rindex(struct le_str const *s, char c);
 
+// Find index of substring (`sub`) in `s`.
+size_t le_str_find(struct le_str const *s, struct le_str const *sub);
+
+// Find index of substring (`sub`) in `s` with offset `n`. That means it will return index of `n`th match. 
+size_t le_str_find_n(struct le_str const *s, struct le_str const *sub, unsigned int n);
+
 #endif

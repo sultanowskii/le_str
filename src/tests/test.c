@@ -9,6 +9,8 @@
 int main() {
     puts("Running tests...");
 
+    struct le_str *empty = le_str_create_with_cstr("");
+
     char const *hello = "Hello ";
     char const *world = "world!";
     char *helloworld = calloc(64, sizeof(char));
@@ -59,11 +61,24 @@ int main() {
     }
     ASSERT(le_str_is_valid(s3_reversed))
 
+    struct le_str *ab = le_str_create_with_cstr("ab");
+    struct le_str *ddabdabab = le_str_create_with_cstr("ddabdabab");
+    struct le_str *cool = le_str_create_with_cstr("cool");
+    ASSERT(le_str_find(ddabdabab, ab) == 2);
+    ASSERT(le_str_find(ddabdabab, cool) == (size_t)-1);
+    ASSERT(le_str_find_n(ddabdabab, ab, 2) == 5);
+    ASSERT(le_str_find(ddabdabab, empty) == 0);
+    ASSERT(le_str_find(ddabdabab, ddabdabab) == 0);
+
+    le_str_destroy(empty);
     le_str_destroy(s1);
     le_str_destroy(s2);
     le_str_destroy(s3);
     le_str_destroy(s3_copy);
     le_str_destroy(s3_reversed);
+    le_str_destroy(ab);
+    le_str_destroy(ddabdabab);
+    le_str_destroy(cool);
 
     puts("Finished.");
 

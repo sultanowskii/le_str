@@ -188,3 +188,66 @@ size_t le_str_rindex(struct le_str const *s, char c) {
     }
     return (size_t)-1;
 }
+
+size_t le_str_find(struct le_str const *s, struct le_str const *sub) {
+    size_t start_index = 0;
+    size_t sub_i = 0;
+
+    size_t length = s->length;
+    size_t sub_length = sub->length;
+
+    if (sub_length == 0)
+        return 0;
+
+    for (size_t i = 0; i < length; i++) {
+        char s_symbol = __unsafe_le_str_get_c(s, i);
+        char sub_symbol = __unsafe_le_str_get_c(sub, sub_i);
+
+        if (s_symbol == sub_symbol) {
+            if (sub_i == 0)
+                start_index = i;
+            sub_i += 1;
+            if (sub_i >= sub_length - 1)
+                return start_index;
+        }
+        else {
+            sub_i = 0;
+        }
+    }
+
+    return -1;
+}
+
+size_t le_str_find_n(struct le_str const *s, struct le_str const *sub, unsigned int n) {
+    size_t start_index = 0;
+    size_t sub_i = 0;
+
+    unsigned int match_cntr = 0;
+
+    size_t length = s->length;
+    size_t sub_length = sub->length;
+
+    if (sub_length == 0)
+        return 0;
+
+    for (size_t i = 0; i < length; i++) {
+        char s_symbol = __unsafe_le_str_get_c(s, i);
+        char sub_symbol = __unsafe_le_str_get_c(sub, sub_i);
+
+        if (s_symbol == sub_symbol) {
+            if (sub_i == 0)
+                start_index = i;
+            sub_i += 1;
+            if (sub_i >= sub_length - 1) {
+                if (++match_cntr == n)
+                    return start_index;
+                sub_i = 0;
+            }
+        }
+        else {
+            sub_i = 0;
+        }
+    }
+
+    return -1;
+}

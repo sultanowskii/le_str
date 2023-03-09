@@ -10,7 +10,7 @@ Yet another C library providing some modernish str tricks. Deal with it.
 - [x] Getting a copy of the string
 - [x] Getting a reversed string
 - [x] Integrity validation (the validity of `length` etc.)
-- [ ] Finding a substring
+- [x] Finding a substring
 - [x] Getting index/rindex of symbol
 - [ ] Splitting (?)
 - [ ] Replacing
