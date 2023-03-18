@@ -43,6 +43,7 @@ void le_str_destroy(struct le_str *s) {
     free(s);
 }
 
+// TODO: think about length vs size problem 
 inline int le_str_is_index_within_length(struct le_str const *s, size_t index) {
     return 0 <= index && index < s->chunk_size - 1;
 }
