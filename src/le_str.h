@@ -85,4 +85,9 @@ size_t le_str_find(struct le_str const *s, struct le_str const *sub);
 // Find index of substring (`sub`) in `s` with offset `n`. That means it will return index of `n`th match. 
 size_t le_str_find_n(struct le_str const *s, struct le_str const *sub, unsigned int n);
 
+// Get slice of string (both bounds are inclusive).
+// Returns -1 if `start` or `end` are not within [0; length-1]
+// Returns -2 if `start` > `end`
+struct le_str *le_str_slice(struct le_str const *s, size_t start, size_t end);
+
 #endif

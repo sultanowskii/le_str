@@ -69,16 +69,22 @@ int main() {
     ASSERT(le_str_find_n(ddabdabab, ab, 2) == 5);
     ASSERT(le_str_find(ddabdabab, empty) == 0);
     ASSERT(le_str_find(ddabdabab, ddabdabab) == 0);
-
-    le_str_destroy(empty);
-    le_str_destroy(s1);
-    le_str_destroy(s2);
-    le_str_destroy(s3);
-    le_str_destroy(s3_copy);
-    le_str_destroy(s3_reversed);
     le_str_destroy(ab);
     le_str_destroy(ddabdabab);
     le_str_destroy(cool);
+
+    struct le_str *s123456789 = le_str_create_with_cstr("123456789");
+    struct le_str *sliced1 = le_str_slice(s123456789, 2, 4);
+    struct le_str *sliced2 = le_str_slice(s123456789, 2, 100);
+    struct le_str *sliced3 = le_str_slice(s123456789, 5, 4);
+    struct le_str *sliced4 = le_str_slice(s123456789, 8, 8);
+    ASSERT(strcmp(sliced1->data, "345") == 0)
+    ASSERT(sliced2 == (struct le_str *)-1)
+    ASSERT(sliced3 == (struct le_str *)-2)
+    ASSERT(strcmp(sliced4->data, "9") == 0)
+    le_str_destroy(s123456789);
+    le_str_destroy(sliced1);
+    le_str_destroy(sliced4);
 
     puts("Finished.");
 

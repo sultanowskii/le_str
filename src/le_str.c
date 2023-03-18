@@ -31,7 +31,7 @@ struct le_str *le_str_create_with_length(size_t length) {
     size_t chunk_size = MAX(DEFAULT_CHUNK_SIZE, length + 1);
 
     s->data = (char *)calloc(chunk_size, sizeof(char));
-    s->chunk_size = DEFAULT_CHUNK_SIZE;
+    s->chunk_size = chunk_size;
     s->length = 0;
 
     return s;
@@ -44,7 +44,7 @@ void le_str_destroy(struct le_str *s) {
 }
 
 inline int le_str_is_index_within_length(struct le_str const *s, size_t index) {
-    return 0 <= index && 0 < s->chunk_size - 1;
+    return 0 <= index && index < s->chunk_size - 1;
 }
 
 inline char __unsafe_le_str_get_c(struct le_str const *s, size_t index) {
@@ -250,4 +250,24 @@ size_t le_str_find_n(struct le_str const *s, struct le_str const *sub, unsigned 
     }
 
     return -1;
+}
+
+struct le_str *le_str_slice(struct le_str const *s, size_t start, size_t end) {
+    if (!le_str_is_index_within_length(s, start) || !le_str_is_index_within_length(s, end)) {
+        return (struct le_str *)-1;
+    }
+
+    if (start > end) {
+        return (struct le_str *)-2;
+    }
+
+    struct le_str *new_s = le_str_create_with_length(end - start + 1);
+
+    for (size_t i = start; i <= end; i++) {
+        size_t new_s_index = i - start;
+        char tmp = __unsafe_le_str_get_c(s, i);
+        __unsafe_le_str_set_c(new_s, new_s_index, tmp); 
+    }
+
+    return new_s;
 }

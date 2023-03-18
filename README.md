@@ -14,6 +14,7 @@ Yet another C library providing some modernish str tricks. Deal with it.
 - [x] Getting index/rindex of symbol
 - [ ] Splitting (?)
 - [ ] Replacing
+- [x] Slicing
 
 ### Contribute
 If you have any suggestions, feel free to open an issue :)
