@@ -13,8 +13,9 @@ Yet another C library providing some modernish str tricks. Deal with it.
 - [x] Finding a substring
 - [x] Getting index/rindex of symbol
 - [x] Splitting
-- [ ] Replacing
+- [x] Replacing
 - [x] Slicing
+- [ ] Resolve `size` vs `length` pain in the ass
 
 ### Contribute
 If you have any suggestions, feel free to open an issue :)

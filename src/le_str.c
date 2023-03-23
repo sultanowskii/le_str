@@ -324,3 +324,20 @@ struct le_str **le_str_split(struct le_str const *s, struct le_str const *delimi
     
     return tokens;
 }
+
+struct le_str *le_str_replace(struct le_str const *s, struct le_str const *old, struct le_str const *new) {
+    struct le_str **tokens = le_str_split(s, old);
+    struct le_str *result = le_str_create();
+
+    struct le_str **token_ptr = tokens;
+
+    while (*token_ptr != NULL) {
+        le_str_concat(result, *token_ptr);
+        le_str_destroy(*token_ptr);
+        if (*(++token_ptr) != NULL) {
+            le_str_concat(result, new);
+        }
+    }
+
+    return result;
+}

@@ -93,4 +93,7 @@ struct le_str *le_str_slice(struct le_str const *s, size_t start, size_t end);
 // Split string using delimiter (returns array of le_strs). Don't forget to destroy it too!
 struct le_str **le_str_split(struct le_str const *s, struct le_str const *delimiter);
 
+// Replace all occurrences of `old` to `new` in s (new instance).
+struct le_str *le_str_replace(struct le_str const *s, struct le_str const *old, struct le_str const *new);
+
 #endif

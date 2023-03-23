@@ -204,6 +204,18 @@ void test_split() {
     free(tokens);
 }
 
+void test_replace() {
+    struct le_str *orig = le_str_create_with_cstr("I HATE JAVA!!  JAVA MAKES ME SICK. I HOPE ONE DAY JAVAA'LL BECOME OBSOLETE.");
+    struct le_str *old = le_str_create_with_cstr("JAVA");
+    struct le_str *new = le_str_create_with_cstr("C++");
+
+    struct le_str *result = le_str_replace(orig, old, new);
+    ASSERT(result->length == 72)
+    ASSERT(strcmp(result->data, "I HATE C++!!  C++ MAKES ME SICK. I HOPE ONE DAY C++A'LL BECOME OBSOLETE.") == 0)
+
+    le_str_destroy(result);
+}
+
 int main() {
     puts("Running tests...\n");
 
@@ -220,6 +232,7 @@ int main() {
     test_find();
     test_slice();
     test_split();
+    test_replace();
 
     printf("\nFinished. %d/%d tests passed.\n", assert_cntr - err_cntr, assert_cntr);
     return 0;
