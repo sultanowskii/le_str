@@ -68,17 +68,6 @@ inline void le_str_set_c(struct le_str *s, size_t index, char c) {
         s->data[index] = c;
 }
 
-struct le_str *le_str_get_slice(struct le_str const *s, size_t start, size_t end) {
-    if (start >= end)
-        return (struct le_str *)0;
-
-    struct le_str *sub_s = le_str_create();
-
-    __le_str_append_ncstr(sub_s, s->data + start, end - start);
-
-    return sub_s;
-}
-
 void __le_str_expand_upto(struct le_str *s, size_t expected_chunk_size) {
     if (s->chunk_size >= expected_chunk_size)
         return;
@@ -190,6 +179,32 @@ size_t le_str_rindex(struct le_str const *s, char c) {
     return (size_t)-1;
 }
 
+size_t __cstr_find(char const *s, size_t length, char const *sub, size_t sub_length) {
+    size_t start_index = 0;
+    size_t sub_i = 0;
+
+    if (sub_length == 0)
+        return 0;
+
+    for (size_t i = 0; i < length; i++) {
+        char s_symbol = s[i];
+        char sub_symbol = sub[sub_i];
+
+        if (s_symbol == sub_symbol) {
+            if (sub_i == 0)
+                start_index = i;
+            sub_i++;
+            if (sub_i >= sub_length)
+                return start_index;
+        }
+        else {
+            sub_i = 0;
+        }
+    }
+
+    return -1;
+}
+
 size_t le_str_find(struct le_str const *s, struct le_str const *sub) {
     size_t start_index = 0;
     size_t sub_i = 0;
@@ -207,8 +222,8 @@ size_t le_str_find(struct le_str const *s, struct le_str const *sub) {
         if (s_symbol == sub_symbol) {
             if (sub_i == 0)
                 start_index = i;
-            sub_i += 1;
-            if (sub_i >= sub_length - 1)
+            sub_i++;
+            if (sub_i >= sub_length)
                 return start_index;
         }
         else {
@@ -238,8 +253,8 @@ size_t le_str_find_n(struct le_str const *s, struct le_str const *sub, unsigned 
         if (s_symbol == sub_symbol) {
             if (sub_i == 0)
                 start_index = i;
-            sub_i += 1;
-            if (sub_i >= sub_length - 1) {
+            sub_i++;
+            if (sub_i >= sub_length) {
                 if (++match_cntr == n)
                     return start_index;
                 sub_i = 0;
@@ -271,4 +286,44 @@ struct le_str *le_str_slice(struct le_str const *s, size_t start, size_t end) {
     }
 
     return new_s;
+}
+
+struct le_str **le_str_split(struct le_str const *s, struct le_str const *delimiter) {
+    // TODO: change to vector
+    size_t token_nmb = s->length + 2;
+    struct le_str **tokens = (struct le_str**)calloc(token_nmb, sizeof(struct le_str *));
+    struct le_str **token_ptr = tokens;
+
+    size_t length = s->length;
+    size_t delimiter_length = delimiter->length;
+    size_t data_i = 0;
+    size_t delimiter_index = 0;
+    size_t prev_delimiter_end_index = 0;
+
+    if (delimiter_length == 0) {
+        *token_ptr = le_str_dup(s);
+        return tokens;
+    }
+
+    while (delimiter_index < length) {
+        delimiter_index = __cstr_find(
+            s->data + prev_delimiter_end_index,
+            s->length - prev_delimiter_end_index,
+            delimiter->data,
+            delimiter_length
+        );
+        if (delimiter_index == -1) {
+            *(token_ptr++) = le_str_slice(s, prev_delimiter_end_index, length);
+            break;
+        }
+        delimiter_index += prev_delimiter_end_index;
+        if (prev_delimiter_end_index == delimiter_index) {
+            *(token_ptr++) = le_str_create_with_cstr("");
+        } else {
+            *(token_ptr++) = le_str_slice(s, prev_delimiter_end_index, delimiter_index - 1);
+        }
+        prev_delimiter_end_index = delimiter_index + delimiter_length;
+    }
+    
+    return tokens;
 }

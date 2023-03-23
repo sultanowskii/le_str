@@ -45,9 +45,6 @@ void __le_str_append_cstr(struct le_str *s, char const *cstr);
 // Append n symbols of cstr in the end of s data
 void __le_str_append_ncstr(struct le_str *s, char const *cstr, size_t n);
 
-// Get slice of le_str (a new le_str instance)
-struct le_str *le_str_get_slice(struct le_str const *s, size_t start, size_t end);
-
 // Create a concatenation of two le_strs (new instance)
 struct le_str *le_str_add(struct le_str const *first, struct le_str const *second);
 
@@ -85,9 +82,15 @@ size_t le_str_find(struct le_str const *s, struct le_str const *sub);
 // Find index of substring (`sub`) in `s` with offset `n`. That means it will return index of `n`th match. 
 size_t le_str_find_n(struct le_str const *s, struct le_str const *sub, unsigned int n);
 
+// Find index of substring (`sub`) in `s`.
+size_t __cstr_find(char const *s, size_t length, char const *sub, size_t sub_length);
+
 // Get slice of string (both bounds are inclusive).
 // Returns -1 if `start` or `end` are not within [0; length-1]
 // Returns -2 if `start` > `end`
 struct le_str *le_str_slice(struct le_str const *s, size_t start, size_t end);
+
+// Split string using delimiter (returns array of le_strs). Don't forget to destroy it too!
+struct le_str **le_str_split(struct le_str const *s, struct le_str const *delimiter);
 
 #endif

@@ -12,7 +12,7 @@ Yet another C library providing some modernish str tricks. Deal with it.
 - [x] Integrity validation (the validity of `length` etc.)
 - [x] Finding a substring
 - [x] Getting index/rindex of symbol
-- [ ] Splitting (?)
+- [x] Splitting
 - [ ] Replacing
 - [x] Slicing
 

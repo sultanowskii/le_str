@@ -175,6 +175,35 @@ void test_slice() {
     le_str_destroy(slice4);
 }
 
+void test_split() {
+    struct le_str *basic = le_str_create_with_cstr(" tanki online  v2 ");
+    struct le_str *space = le_str_create_with_cstr(" ");
+    struct le_str **tokens = le_str_split(basic, space);
+    struct le_str **token_ptr = tokens;
+
+    size_t length = 0;
+
+    ASSERT(strcmp(tokens[0]->data, "") == 0)
+    ASSERT(strcmp(tokens[1]->data, "tanki") == 0)
+    ASSERT(strcmp(tokens[2]->data, "online") == 0)
+    ASSERT(strcmp(tokens[3]->data, "") == 0)
+    ASSERT(strcmp(tokens[4]->data, "v2") == 0)
+    ASSERT(strcmp(tokens[5]->data, "") == 0)
+
+    // TODO: написать нормальный тест
+    while (*token_ptr != NULL) {
+        le_str_destroy((*token_ptr));
+        token_ptr++;
+        length++;
+    }
+
+    ASSERT(length == 6)
+
+    le_str_destroy(basic);
+    le_str_destroy(space);
+    free(tokens);
+}
+
 int main() {
     puts("Running tests...\n");
 
@@ -190,6 +219,7 @@ int main() {
     test_reverse();
     test_find();
     test_slice();
+    test_split();
 
     printf("\nFinished. %d/%d tests passed.\n", assert_cntr - err_cntr, assert_cntr);
     return 0;
