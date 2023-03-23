@@ -196,8 +196,7 @@ size_t __cstr_find(char const *s, size_t length, char const *sub, size_t sub_len
             sub_i++;
             if (sub_i >= sub_length)
                 return start_index;
-        }
-        else {
+        } else {
             sub_i = 0;
         }
     }
@@ -225,8 +224,7 @@ size_t le_str_find(struct le_str const *s, struct le_str const *sub) {
             sub_i++;
             if (sub_i >= sub_length)
                 return start_index;
-        }
-        else {
+        } else {
             sub_i = 0;
         }
     }
@@ -259,8 +257,7 @@ size_t le_str_find_n(struct le_str const *s, struct le_str const *sub, unsigned 
                     return start_index;
                 sub_i = 0;
             }
-        }
-        else {
+        } else {
             sub_i = 0;
         }
     }
