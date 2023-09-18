@@ -340,6 +340,8 @@ struct le_str *le_str_replace(struct le_str const *s, struct le_str const *old, 
         }
     }
 
+    free(tokens);
+
     return result;
 }
 
