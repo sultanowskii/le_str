@@ -1,16 +1,12 @@
 #ifndef LE_STR
 #define LE_STR
 
-#define DEFAULT_CHUNK_SIZE 32
+#define DEFAULT_CAPACITY 32
 #define TRUE 1
 #define FALSE 0
 typedef char BOOL;
 
-struct le_str {
-    size_t chunk_size;
-    size_t length;
-    char *data;
-};
+struct le_str;
 
 // le_str construction
 struct le_str *le_str_create();
@@ -25,25 +21,13 @@ struct le_str *le_str_create_with_length(size_t length);
 void le_str_destroy(struct le_str *s);
 
 // Check if index is within a length of le_str
-int le_str_is_index_within_length(struct le_str const *s, size_t index);
+int le_str_is_index_within_capacity(struct le_str const *s, size_t index);
 
 // Get le_str symbol on index
-char le_str_get_c(struct le_str const *s, size_t index);
-
-// Get le_str symbol on index unsafely
-char __unsafe_le_str_get_c(struct le_str const *s, size_t index);
+char le_str_get_at(struct le_str const *s, size_t index);
 
 // Set le_str symbol on index
-void le_str_set_c(struct le_str *s, size_t index, char c);
-
-// Set le_str symbol on index unsafely
-void __unsafe_le_str_set_c(struct le_str *s, size_t index, char c);
-
-// Append cstr in the end of s data
-void __le_str_append_cstr(struct le_str *s, char const *cstr);
-
-// Append n symbols of cstr in the end of s data
-void __le_str_append_ncstr(struct le_str *s, char const *cstr, size_t n);
+void le_str_set_at(struct le_str *s, size_t index, char c);
 
 // Create a concatenation of two le_strs (new instance)
 struct le_str *le_str_add(struct le_str const *first, struct le_str const *second);
@@ -82,9 +66,6 @@ size_t le_str_find(struct le_str const *s, struct le_str const *sub);
 // Find index of substring (`sub`) in `s` with offset `n`. That means it will return index of `n`th match. 
 size_t le_str_find_n(struct le_str const *s, struct le_str const *sub, unsigned int n);
 
-// Find index of substring (`sub`) in `s`.
-size_t __cstr_find(char const *s, size_t length, char const *sub, size_t sub_length);
-
 // Get slice of string (both bounds are inclusive).
 // Returns -1 if `start` or `end` are not within [0; length-1]
 // Returns -2 if `start` > `end`
@@ -95,5 +76,14 @@ struct le_str **le_str_split(struct le_str const *s, struct le_str const *delimi
 
 // Replace all occurrences of `old` to `new` in s (new instance).
 struct le_str *le_str_replace(struct le_str const *s, struct le_str const *old, struct le_str const *new);
+
+// Get raw data
+const char *le_str_get_raw(struct le_str const *s);
+
+// Get capaciry
+size_t le_str_get_capacity(struct le_str const *s);
+
+// Get length
+size_t le_str_get_length(struct le_str const *s);
 
 #endif

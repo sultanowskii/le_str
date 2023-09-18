@@ -28,18 +28,18 @@ void test_create_with_cstr() {
     strcat(helloworld, world);
 
     struct le_str *s1 = le_str_create_with_cstr(hello);
-    ASSERT(s1->length == strlen(hello))
-    ASSERT(strcmp(s1->data, hello) == 0)
+    ASSERT(le_str_get_length(s1) == strlen(hello))
+    ASSERT(strcmp(le_str_get_raw(s1), hello) == 0)
     ASSERT(le_str_is_valid(s1))
 
     struct le_str *s2 = le_str_create_with_cstr(world);
-    ASSERT(s2->length == strlen(world))
-    ASSERT(strcmp(s2->data, world) == 0)
+    ASSERT(le_str_get_length(s2) == strlen(world))
+    ASSERT(strcmp(le_str_get_raw(s2), world) == 0)
     ASSERT(le_str_is_valid(s2))
 
     struct le_str *s3 = le_str_add(s1, s2);
-    ASSERT(s3->length == strlen(hello) + strlen(world))
-    ASSERT(strcmp(s3->data, helloworld) == 0)
+    ASSERT(le_str_get_length(s3) == strlen(hello) + strlen(world))
+    ASSERT(strcmp(le_str_get_raw(s3), helloworld) == 0)
     ASSERT(le_str_is_valid(s3))
 
     le_str_destroy(s1);
@@ -51,11 +51,11 @@ void test_create_with_cstr() {
 void test_is_index_within_length() {
     struct le_str *s = le_str_create_with_cstr("abc");
 
-    ASSERT(le_str_is_index_within_length(s, 0) == 1)
-    ASSERT(le_str_is_index_within_length(s, 1) == 1)
-    ASSERT(le_str_is_index_within_length(s, 2) == 1)
-    // TODO: think about this inconvenience
-    ASSERT(le_str_is_index_within_length(s, DEFAULT_CHUNK_SIZE) == 0)
+    ASSERT(le_str_is_index_within_capacity(s, 0) == 1)
+    ASSERT(le_str_is_index_within_capacity(s, 1) == 1)
+    ASSERT(le_str_is_index_within_capacity(s, 2) == 1)
+    ASSERT(le_str_is_index_within_capacity(s, 3) == 1)
+    ASSERT(le_str_is_index_within_capacity(s, DEFAULT_CAPACITY) == 0)
 
     le_str_destroy(s);
 }
@@ -63,8 +63,8 @@ void test_is_index_within_length() {
 void test_pointers() {
     struct le_str *s = le_str_create_with_cstr("Last chance to look at me, Hector");
 
-    ASSERT(le_str_begin(s) == s->data)
-    ASSERT(le_str_end(s) == s->data + s->length)
+    ASSERT(le_str_begin(s) == le_str_get_raw(s))
+    ASSERT(le_str_end(s) == le_str_get_raw(s) + le_str_get_length(s))
 
     le_str_destroy(s);
 }
@@ -84,8 +84,8 @@ void test_clear_data() {
     struct le_str *s = le_str_create_with_cstr("Tanki online");
 
     le_str_clear_data(s);
-    ASSERT(s->length == 0);
-    ASSERT(s->data[0] == 0);
+    ASSERT(le_str_get_length(s) == 0);
+    ASSERT(le_str_get_raw(s)[0] == 0);
 
     le_str_destroy(s);
 }
@@ -94,8 +94,8 @@ void test_get_c() {
     char *cstr = "HOLY SHIT I'VE JUST HIT A CLIP";
     struct le_str *s = le_str_create_with_cstr(cstr);
 
-    char c_from_method = le_str_get_c(s, 2);
-    char c_from_data = s->data[2];
+    char c_from_method = le_str_get_at(s, 2);
+    char c_from_data = le_str_get_raw(s)[2];
     char c_from_orig = cstr[2];
     ASSERT(c_from_method == c_from_orig)
     ASSERT(c_from_method == c_from_data)
@@ -107,8 +107,8 @@ void test_set_c() {
     char *cstr = "HOLY SHIT I'VE JUST HIT A CLIP";
     struct le_str *s = le_str_create_with_cstr(cstr);
 
-    le_str_set_c(s, 7, '*');
-    char c = le_str_get_c(s, 7);
+    le_str_set_at(s, 7, '*');
+    char c = le_str_get_at(s, 7);
     ASSERT(c == '*')
 
     le_str_destroy(s);
@@ -118,8 +118,8 @@ void test_dup() {
     struct le_str *s = le_str_create_with_cstr("Me when the");
 
     struct le_str *s_copy = le_str_dup(s);
-    ASSERT(s_copy->length == s->length)
-    ASSERT(strcmp(s_copy->data, s->data) == 0)
+    ASSERT(le_str_get_length(s_copy) == le_str_get_length(s))
+    ASSERT(strcmp(le_str_get_raw(s_copy), le_str_get_raw(s)) == 0)
     ASSERT(le_str_is_valid(s_copy))
 
     le_str_destroy(s);
@@ -130,9 +130,13 @@ void test_reverse() {
     struct le_str *s = le_str_create_with_cstr("Fortnite balls");
 
     struct le_str *s_reversed = le_str_get_reversed(s);
-    ASSERT(s_reversed->length == s->length)
-    for (size_t i = 0; i < s->length; i++) {
-        ASSERT(le_str_get_c(s, i) == le_str_get_c(s_reversed, s_reversed->length - i - 1))
+    size_t s_length = le_str_get_length(s);
+    size_t s_reversed_length = le_str_get_length(s_reversed);
+
+    ASSERT(s_reversed_length == s_length)
+
+    for (size_t i = 0; i < le_str_get_length(s); i++) {
+        ASSERT(le_str_get_at(s, i) == le_str_get_at(s_reversed, s_reversed_length - i - 1))
     }
     ASSERT(le_str_is_valid(s_reversed))
 
@@ -165,10 +169,10 @@ void test_slice() {
     struct le_str *slice3 = le_str_slice(s123456789, 5, 4);
     struct le_str *slice4 = le_str_slice(s123456789, 8, 8);
 
-    ASSERT(strcmp(slice1->data, "345") == 0)
+    ASSERT(strcmp(le_str_get_raw(slice1), "345") == 0)
     ASSERT(slice2 == (struct le_str *)-1)
     ASSERT(slice3 == (struct le_str *)-2)
-    ASSERT(strcmp(slice4->data, "9") == 0)
+    ASSERT(strcmp(le_str_get_raw(slice4), "9") == 0)
 
     le_str_destroy(s123456789);
     le_str_destroy(slice1);
@@ -183,12 +187,12 @@ void test_split() {
 
     size_t length = 0;
 
-    ASSERT(strcmp(tokens[0]->data, "") == 0)
-    ASSERT(strcmp(tokens[1]->data, "tanki") == 0)
-    ASSERT(strcmp(tokens[2]->data, "online") == 0)
-    ASSERT(strcmp(tokens[3]->data, "") == 0)
-    ASSERT(strcmp(tokens[4]->data, "v2") == 0)
-    ASSERT(strcmp(tokens[5]->data, "") == 0)
+    ASSERT(strcmp(le_str_get_raw(tokens[0]), "") == 0)
+    ASSERT(strcmp(le_str_get_raw(tokens[1]), "tanki") == 0)
+    ASSERT(strcmp(le_str_get_raw(tokens[2]), "online") == 0)
+    ASSERT(strcmp(le_str_get_raw(tokens[3]), "") == 0)
+    ASSERT(strcmp(le_str_get_raw(tokens[4]), "v2") == 0)
+    ASSERT(strcmp(le_str_get_raw(tokens[5]), "") == 0)
 
     // TODO: написать нормальный тест
     while (*token_ptr != NULL) {
@@ -210,9 +214,12 @@ void test_replace() {
     struct le_str *new = le_str_create_with_cstr("C++");
 
     struct le_str *result = le_str_replace(orig, old, new);
-    ASSERT(result->length == 72)
-    ASSERT(strcmp(result->data, "I HATE C++!!  C++ MAKES ME SICK. I HOPE ONE DAY C++A'LL BECOME OBSOLETE.") == 0)
+    ASSERT(le_str_get_length(result) == 72)
+    ASSERT(strcmp(le_str_get_raw(result), "I HATE C++!!  C++ MAKES ME SICK. I HOPE ONE DAY C++A'LL BECOME OBSOLETE.") == 0)
 
+    le_str_destroy(orig);
+    le_str_destroy(old);
+    le_str_destroy(new);
     le_str_destroy(result);
 }
 
